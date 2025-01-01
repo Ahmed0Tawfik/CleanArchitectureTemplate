@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\UserProfile\EventsHandlers\" />
+    <Folder Include="Entities\UserProfile\Events\" />
+    <Folder Include="Entities\UserProfile\Specifications\" />
+    <Folder Include="Entities\Entity\Specifications\" />
+    <Folder Include="Entities\Entity\EventsHandlers\" />
+    <Folder Include="Entities\Entity\Events\" />
+    <Folder Include="Enums\" />
+  </ItemGroup>
+
+</Project>
