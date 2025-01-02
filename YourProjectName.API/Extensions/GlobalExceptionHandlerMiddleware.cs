@@ -2,14 +2,16 @@
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using YourProjectName.Infrastructure.Logging;
 
 namespace YourProjectName.API.Extensions
 {
     public static class GlobalExceptionHandlerMiddleware
     {
         public static void HandleException(
-            this IApplicationBuilder app
-            )
+            this IApplicationBuilder app,
+            ILogger<ExceptionLogger> logger
+        )
         {
             app.UseExceptionHandler(o =>
             o.Run(async context =>
@@ -18,9 +20,11 @@ namespace YourProjectName.API.Extensions
                 var errorFeatures =
                     context.Features.Get<IExceptionHandlerPathFeature>();
 
-                var exception = errorFeatures.Error;
+                var exception = errorFeatures?.Error;
 
-                if(!(exception is FluentValidation.ValidationException validationsException))
+                if ( exception != null ) logger.LogError(exception, exception.Message);
+
+                if (!(exception is FluentValidation.ValidationException validationsException))
                     throw exception;
 
                 var errors = validationsException.Errors

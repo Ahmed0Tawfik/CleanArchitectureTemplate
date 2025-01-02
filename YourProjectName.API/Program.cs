@@ -1,7 +1,10 @@
 using Scalar.AspNetCore;
+using Serilog.Core;
+using YourProjectName.API;
 using YourProjectName.API.Extensions;
 using YourProjectName.Application.Extensions;
 using YourProjectName.Infrastructure.Extensions;
+using YourProjectName.Infrastructure.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-
+builder.Host.SerilogConfiguration();
 
 builder.Services
     .AddApplicationServices()
@@ -28,7 +31,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.HandleException();
+var logger = app.Services.GetRequiredService<ILogger<ExceptionLogger>>();
+
+app.HandleException(logger);
 
 app.UseAuthentication();
 
