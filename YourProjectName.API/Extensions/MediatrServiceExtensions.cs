@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using System.Reflection;
+using YourProjectName.Application.CQRS.Authentication.CreateUser;
 
 namespace YourProjectName.API.Extensions
 {
@@ -6,8 +8,10 @@ namespace YourProjectName.API.Extensions
     {
         public static IServiceCollection AddMediatrServices(this IServiceCollection services)
         {
-            services.AddMediatR(
-                options => options.RegisterServicesFromAssembly(typeof(Program).Assembly));
+            services.AddMediatR(cfg =>
+                            cfg.RegisterServicesFromAssemblies(
+                            Assembly.GetAssembly(typeof(RegisterUserCommand)),
+                            Assembly.GetAssembly(typeof(RegisterUserCommandHandler))));
 
             services.AddValidatorsFromAssembly(typeof(Program).Assembly);
             return services;

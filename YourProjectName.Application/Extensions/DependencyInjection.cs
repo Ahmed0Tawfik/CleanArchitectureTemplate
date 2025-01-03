@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using YourProjectName.Application.APIResponse;
 using YourProjectName.Application.Services.Authentication;
 
 namespace YourProjectName.Application.Extensions
@@ -8,7 +9,7 @@ namespace YourProjectName.Application.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-
+            services.AddScoped<APIResponseHandler>();
 
 
             return services;

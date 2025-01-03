@@ -2,15 +2,7 @@
 {
     public interface IAuthenticationService
     {
-        AuthenticationResponse Login(
-            string email,
-            string password
-            );
-
-
-        AuthenticationResponse Register(
-            string email,
-            string password
-            );
+        Task<AuthenticationResponse> LoginAsync(string email, string password);
+        Task<AuthenticationResponse> RegisterAsync(string email, string username, string password);
     }
 }

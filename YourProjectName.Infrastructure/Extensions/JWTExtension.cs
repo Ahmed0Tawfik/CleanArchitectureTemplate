@@ -12,7 +12,7 @@ namespace YourProjectName.Infrastructure.Extensions
             this IServiceCollection services, IConfiguration configuration)
         {
             // Configure JWT settings
-            services.Configure<JWTSettings>(configuration.GetSection("JWTSettings"));
+            services.Configure<JWTSettings>(configuration.GetSection("JWT"));
 
             // Retrieve JWT settings
             var jwtSettings = configuration.GetSection("JWTSettings").Get<JWTSettings>();

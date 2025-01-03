@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
-using System.Text;
 using System.Text.Json;
-using YourProjectName.Infrastructure.Logging;
+using YourProjectName.Application.APIResponse;
+using FluentValidation;
 
 namespace YourProjectName.API.Extensions
 {
@@ -10,39 +10,62 @@ namespace YourProjectName.API.Extensions
     {
         public static void HandleException(
             this IApplicationBuilder app,
-            ILogger<ExceptionLogger> logger
-        )
+            ILogger<ExceptionLogger> logger)
         {
-            app.UseExceptionHandler(o =>
-            o.Run(async context =>
+            app.UseExceptionHandler(options =>
             {
+                options.Run(async context =>
+                {
+                    var errorFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+                    var exception = errorFeature?.Error;
+                    var responseHandler = new APIResponseHandler();
 
-                var errorFeatures =
-                    context.Features.Get<IExceptionHandlerPathFeature>();
-
-                var exception = errorFeatures?.Error;
-
-                if ( exception != null ) logger.LogError(exception, exception.Message);
-
-                if (!(exception is FluentValidation.ValidationException validationsException))
-                    throw exception;
-
-                var errors = validationsException.Errors
-                    .Select(e => new
+                    if (exception != null)
                     {
-                        Property = e.PropertyName,
-                        Message = e.ErrorMessage
-                    });
+                        // Log the exception
+                        logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
 
+                        context.Response.ContentType = "application/json";
 
-                var errorContent = JsonSerializer.Serialize(errors);
+                        APIResponse<string> response;
 
-                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                context.Response.ContentType = "application/json";
-                await context.Response.WriteAsync(errorContent,Encoding.UTF8);
+                        switch (exception)
+                        {
+                            case ValidationException validationException:
+                                var validationErrors = validationException.Errors
+                                    .Select(e => $"{e.PropertyName}: {e.ErrorMessage}");
 
+                                response = responseHandler.CreateFailureResponse<string>(
+                                    validationErrors,
+                                    "Validation error occurred",
+                                    (int)HttpStatusCode.BadRequest);
+                                context.Response.StatusCode = response.StatusCode;
+                                break;
 
-            }));
+                            case UnauthorizedAccessException:
+                                response = responseHandler.CreateUnauthorizedResponse<string>("Unauthorized request");
+                                context.Response.StatusCode = response.StatusCode;
+                                break;
+
+                            case AccessViolationException:
+                                response = responseHandler.CreateForbiddenResponse<string>("Access violation occurred");
+                                context.Response.StatusCode = response.StatusCode;
+                                break;
+
+                            default:
+                                response = responseHandler.CreateFailureResponse<string>(
+                                    new[] { "An internal server error occurred." },
+                                    exception.Message,
+                                    (int)HttpStatusCode.InternalServerError);
+                                context.Response.StatusCode = response.StatusCode;
+                                break;
+
+                        }
+
+                        await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+                    }
+                });
+            });
         }
     }
 }

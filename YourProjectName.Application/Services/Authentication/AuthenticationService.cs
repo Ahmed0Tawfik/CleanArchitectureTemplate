@@ -14,32 +14,41 @@ namespace YourProjectName.Application.Services.Authentication
             _userService = userService;
         }
 
-        public AuthenticationResponse Login(string email, string password)
+        public async Task<AuthenticationResponse> LoginAsync(string email, string password)
         {
-            // Check if User exists and passwords match 
+            var existinguser = await _userService.CheckPasswordAsync(new ApplicationUserDTO { Email = email, Password = password });
 
-            // Create Token
+            if(existinguser != null)
+            {
+                return new AuthenticationResponse
+                {
+                    Token = _tokenService.GenerateToken(existinguser.Id, existinguser.Email, existinguser.UserName),
+                    ExpiresAt = DateTime.Now.AddHours(3),
+                    ExpiresIn = 3,
+                    //RefreshToken = _tokenService.GenerateRefreshToken()
+                };
+            }
 
+            throw new Exception("Invalid credentials");
 
-
-            return new AuthenticationResponse(Guid.NewGuid(), email, "token");
         }
 
-        public AuthenticationResponse Register(string email, string password)
+        public async Task<AuthenticationResponse> RegisterAsync(string email, string username, string password)
         {
-            // Check if User Already exists
+            var result = await _userService.CreateAsync(new ApplicationUserDTO { Email = email, UserName = username, Password = password });
 
-            // Create User
+            if (result != null)
+            {
+                return new AuthenticationResponse
+                {
+                    Token = _tokenService.GenerateToken(result.Id, result.Email, result.UserName),
+                    ExpiresAt = DateTime.Now.AddHours(3),
+                    ExpiresIn = 3,
+                    //RefreshToken = _tokenService.GenerateRefreshToken()
+                };
+            }
 
-            // Create Token
-
-            //var token = _tokenService.GenerateToken(Guid.NewGuid(), email);
-
-            return null;
-
-
-
-
+            throw new Exception("Invalid credentials");
         }
     }
 }

@@ -6,5 +6,6 @@ namespace YourProjectName.Core.Interfaces
     {
         IGenericRepository<TEntity> Repository<TEntity>() where TEntity : BaseEntity;
         Task<int> SaveChangesAsync();
+        void RollBack();
     }
 }

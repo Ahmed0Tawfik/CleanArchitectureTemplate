@@ -10,6 +10,7 @@ using YourProjectName.Infrastructure.Identity;
 using YourProjectName.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using YourProjectName.Core.Interfaces;
 
 
 namespace YourProjectName.Infrastructure.Extensions
@@ -57,6 +58,8 @@ namespace YourProjectName.Infrastructure.Extensions
             services.AddSingleton<ITokenService, TokenService>();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 
             // Register JWTSettings

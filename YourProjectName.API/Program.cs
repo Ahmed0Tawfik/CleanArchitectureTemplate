@@ -27,6 +27,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference(); // Swagger Althernative (BETTER)
+    builder.Configuration.AddUserSecrets<Program>();
 }
 
 app.UseHttpsRedirection();
