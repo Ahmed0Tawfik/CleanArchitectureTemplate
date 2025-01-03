@@ -35,6 +35,7 @@ The project is structured into four main layers: Core, Application, Infrastructu
 - Logging with Serilog
 - User-secrets for configuration
 - Uniform API response classes
+- Used ScalarAPI For Amazing UI For API DOCS 
 
 ## Installation
 
