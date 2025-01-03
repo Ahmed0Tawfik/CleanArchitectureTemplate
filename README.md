@@ -24,7 +24,7 @@ This template offers a solid foundation to beginners to help them understand the
 
 ## Project Structure
 The project is structured into four main layers: Core, Application, Infrastructure, and API.
-![Clean Architecture Diagram](https://imgur.com/a/1aAwKRp)
+![Clean Architecture Diagram](https://i.imgur.com/zfV7mEM.png)
 
 ## Features
 - .NET Core Identity with JWT tokens
